@@ -1,5 +1,7 @@
 #%%
 """Minimal implementation of an Variational Auto-Encoder for MNIST."""
+
+#%%
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -67,13 +69,13 @@ mnist = input_data.read_data_sets('MNIST_data')
 
 
 #%%
-test_img = mnist.test.images[0]
+test_img = mnist.test.images[100]
 test_img = test_img.reshape([-1, 28, 28, 1])
 plt.figure('test image')
 plt.imshow(test_img.squeeze(), clim=[0, 1], cmap='bone')
 
 #%%
-for i in range(10000):
+for i in range(1000):
     batch = mnist.train.next_batch(100)
     images = batch[0].reshape([-1, 28, 28, 1])
 
@@ -96,3 +98,5 @@ for i in range(10000):
         plt.pause(0.001)
 
 #%%
+# get latent variable vectors
+weights = tf.get_default_graph().get_tensor_by_name('')
