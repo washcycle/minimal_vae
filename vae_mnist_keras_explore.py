@@ -4,9 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.keras.layers import Dense, Lambda, Input, Conv2D, Flatten, Reshape, Conv2DTranspose
-from tensorflow.keras.backend import random_normal
 from tensorflow.keras.models import Model
-from tensorflow.examples.tutorials.mnist import input_data
 from tensorflow.keras.losses import binary_crossentropy
 from tensorflow.keras import backend as K
 
@@ -111,7 +109,7 @@ mu = Dense(latent_dim, name='mu')(x)
 sigma = Dense(latent_dim, name='sigma')(x)
 
 # Sampling
-
+# generates new image pixel values defined by z array
 z = Lambda(sampling, output_shape=(latent_dim,), name='z')([mu, sigma])
 
 encoder = Model(inputs = inputs, outputs = [mu, sigma, z], name='encoder')
@@ -133,7 +131,7 @@ decoder = Model(inputs = latent_inputs, outputs = outputs, name='dencoder')
 decoder.summary()
 
 #%%
-outputs = decoder(encoder(inputs)[2])
+outputs = decoder(encoder(inputs)[2]) # feed z into the decoder
 vae = Model(inputs, outputs, name='vae_mlp')
 
 #%%
@@ -156,7 +154,32 @@ vae.fit(x_train, epochs=5, batch_size=128, callbacks=[printDecodedImage],
         validation_data=(x_test, None), verbose=0)
 
 #%%
+encoded = encoder.predict(x_train)
 
-
-
+#%% Plot training data in latent space
+# https://becominghuman.ai/using-variational-autoencoder-vae-to-generate-new-images-14328877e88d
+plt.figure(figsize=(14,12))
+plt.scatter(encoded[2][:,2], encoded[2][:,3], s=2, c=y_train, cmap='hsv')
+plt.colorbar()
+plt.grid()
+plt.show()
         
+
+# %%
+def display_image_sequence(z, no_of_imgs):
+    new_z = np.apply_along_axis(lambda x: np.linspace(min(x), max(x), no_of_imgs), axis=0, arr=z)    
+    
+    new_images = decoder.predict(new_z)
+    new_images = new_images.reshape(new_images.shape[0], new_images.shape[1], new_images.shape[2])
+    
+    # Display some images
+    fig, axes = plt.subplots(ncols=no_of_imgs, sharex=False,
+                             sharey=True, figsize=(20, 7))
+    counter = 0
+    for i in range(no_of_imgs):
+        axes[counter].imshow(new_images[i], cmap='gray')
+        axes[counter].get_xaxis().set_visible(False)
+        axes[counter].get_yaxis().set_visible(False)
+        counter += 1
+    plt.show()
+# %%

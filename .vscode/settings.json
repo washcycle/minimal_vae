@@ -1,4 +1,4 @@
 {
     "python.linting.pylintEnabled": true,
-    "python.pythonPath": "C:\\workspace\\Continuum\\anaconda3\\envs\\data-sci\\python.exe"
+    "python.pythonPath": "/home/mlando/anaconda3/envs/data-sci/bin/python"
 }
